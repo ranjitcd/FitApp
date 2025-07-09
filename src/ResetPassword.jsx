@@ -88,7 +88,6 @@ const styles = {
   },
   button: {
     padding: "10px",
-    width: "100%",
     backgroundColor: "#10B981",
     color: "white",
     border: "none",
