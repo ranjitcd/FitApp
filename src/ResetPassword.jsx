@@ -1,4 +1,4 @@
-// src/pages/ResetPassword.jsx
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "./supabaseClient";
@@ -9,13 +9,29 @@ export default function ResetPassword() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const accessToken = searchParams.get("access_token");
+ useEffect(() => {
+  const hash = window.location.hash;
+  const params = new URLSearchParams(hash.substring(1)); // remove the "#"
+  const accessToken = params.get("access_token");
+  const refreshToken = params.get("refresh_token");
 
-  useEffect(() => {
-    if (!accessToken) {
-      setMessage("Invalid or missing token.");
-    }
-  }, [accessToken]);
+  if (!accessToken || !refreshToken) {
+    setMessage("Invalid or missing token.");
+    return;
+  }
+
+  supabase.auth
+    .setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    })
+    .then(({ error }) => {
+      if (error) {
+        console.error("Session error:", error.message);
+        setMessage("Failed to authenticate. Try the link again.");
+      }
+    });
+}, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,21 +56,19 @@ export default function ResetPassword() {
       <h2>🔒 Reset Your Password</h2>
       {message && <p>{message}</p>}
 
-      {accessToken && (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="password"
-            placeholder="Enter new password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-            style={styles.input}
-          />
-          <button type="submit" style={styles.button} disabled={loading}>
-            {loading ? "Updating..." : "Update Password"}
-          </button>
-        </form>
-      )}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="password"
+          placeholder="Enter new password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          required
+          style={styles.input}
+        />
+        <button type="submit" style={styles.button} disabled={loading}>
+          {loading ? "Updating..." : "Update Password"}
+        </button>
+      </form>
     </div>
   );
 }
@@ -82,3 +96,4 @@ const styles = {
     cursor: "pointer",
   },
 };
+
