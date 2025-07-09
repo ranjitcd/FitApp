@@ -1,18 +1,18 @@
-// src/pages/ConfirmEmail.jsx
+// src/pages/ResetPasswordSuccess.jsx
 import { useEffect, useState } from "react";
 
-export default function ConfirmEmail() {
-  const [message, setMessage] = useState("Verifying...");
+export default function ResetPasswordSuccess() {
+  const [message, setMessage] = useState("Processing...");
 
   useEffect(() => {
     setTimeout(() => {
-      setMessage("✅ Your email has been confirmed successfully.");
+      setMessage("✅ Your password has been reset successfully. You can now log in.");
     }, 2000);
   }, []);
 
   return (
     <div style={styles.container}>
-      <h2>Email Confirmation</h2>
+      <h2>Password Reset</h2>
       <p>{message}</p>
     </div>
   );
